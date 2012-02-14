@@ -1,0 +1,86 @@
+#version 100
+// Vertex shader Gouraud Shading - Per-vertex lighting
+
+uniform mat4 uMVPMatrix;
+uniform mat4 normalMatrix;
+
+// eye pos
+uniform vec3 eyePos;
+
+// position and normal of the vertices
+attribute vec4 aPosition;
+attribute vec3 aNormal; 
+
+// texture variables
+attribute vec2 aTextureCoord;
+varying vec2 vTextureCoord;
+
+// lighting
+uniform vec4 lightPos;
+uniform vec4 lightColor;
+
+// material
+uniform vec4 matAmbient;
+uniform vec4 matDiffuse;
+uniform vec4 matSpecular;
+uniform float matShininess;
+
+// color to pass on
+varying vec4 color;
+
+void main() {
+	mat3 normMat = mat3(normalMatrix);
+	// eyePos
+	vec3 eP = eyePos;
+
+	// pass on texture variables
+	vTextureCoord = aTextureCoord;
+	
+	//vec4 nm = normalize(normalMatrix * vec4(aNormal, 1.0));
+
+	// normal in eyespace
+	//vec3 EyespaceNormal = vec3(normalMatrix * vec4(aNormal, 1.0));
+	//vec3 EyespaceNormal = normMat * (aNormal);
+	vec3 EyespaceNormal = normMat * (aNormal);
+		
+	// the vertex position in MVP
+	vec4 posit = uMVPMatrix * aPosition; 
+
+	//***adding lightpos in MVP
+	//vec4 lightPosit = uMVPMatrix * lightPos;
+	
+	// light dir in MVP!
+	//vec3 lightDir = lightPos.xyz - posit.xyz;
+	vec3 lightDir = -lightPos.xyz + posit.xyz;
+	
+	// in MVP?
+	//vec3 eyeVec = -posit.xyz;
+	vec3 eyeVec = -eP + posit.xyz;
+
+
+// from there I trust it's going good.
+	
+	vec3 N = normalize(EyespaceNormal);
+    vec3 E = normalize(eyeVec); 
+    vec3 L = normalize(lightDir);
+    
+    // Reflect the vector. Use this or reflect(incidentV, N);
+    vec3 reflectV = reflect(-L, N);
+    
+    // Get lighting terms
+    vec4 ambientTerm;
+    ambientTerm = matAmbient * lightColor;
+    	
+    vec4 diffuseTerm = matDiffuse * max(dot(N, L), 0.0);
+    vec4 specularTerm = matSpecular * pow(max(dot(reflectV, E), 0.0), matShininess);
+    float dist = length(eyeVec);
+    float constantAttenuation=1.0;
+    float linearAttenuation=0.12;
+    float quadraticAttenuation=0.10; 
+    float att = constantAttenuation / ((1.0+linearAttenuation*dist)*(1.0+quadraticAttenuation*dist*dist));
+    
+    color =  att*(ambientTerm + diffuseTerm + specularTerm);
+	
+	gl_Position = uMVPMatrix * aPosition; 
+	
+}

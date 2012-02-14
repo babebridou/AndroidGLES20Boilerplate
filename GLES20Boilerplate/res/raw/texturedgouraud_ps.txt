@@ -1,0 +1,13 @@
+#version 100
+// texture variables
+
+precision mediump float;
+varying vec2 vTextureCoord;
+uniform sampler2D sTexture;
+varying vec4 color;
+
+void main() {
+  //gl_FragColor = texture2D(sTexture, vTextureCoord)*color;
+  gl_FragColor = texture2D(sTexture, vTextureCoord);
+  //gl_FragColor = vec4(0.5, 0.5,0.5,0.5);
+}
