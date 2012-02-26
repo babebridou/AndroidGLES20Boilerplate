@@ -1,0 +1,18 @@
+package com.fairyteller.fairy3d.scene.handlers;
+
+public class AttribComposition {
+	public enum Composition{
+		FLOATBUFFER_VERTS,
+		FLOATBUFFER_VERTS_UV,
+		FLOATBUFFER_VERTS_NORMAL,
+		FLOATBUFFER_VERTS_NORMAL_UV,
+		FLOATBUFFER_VERTS_UV_NORMAL,
+		VBO_VERTS,
+		VBO_VERTS_UV,
+		VBO_VERTS_NORMAL,
+		VBO_VERTS_NORMAL_UV,
+		VBO_VERTS_UV_NORMAL,
+		FLOATBUFFER_UV,
+		VBO_UV
+	}
+}
